@@ -16,7 +16,7 @@ module.exports = {
     "prettier/prettier": "warn", // styling warning based on prettier
     "react/prop-types": "off",
     "prefer-const": "warn", // const type is preferred
-    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/anchor-is-valid": "off", // There is no html element, but app ui element
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": "warn",
   },
