@@ -8,6 +8,7 @@ import axios from "axios";
 import useDataMutation from "../hooks/useDataMutation";
 import LoadingModal from "../component/LoadingModal";
 import AlertModal from "../component/Alert";
+import { MY_BACKEND_URL } from "@env";
 
 const styles = StyleSheet.create({
   title: {
@@ -48,7 +49,8 @@ const Home = () => {
   const [alert, setAlert] = React.useState<Alert | null>(null);
   const [isAlertOpen, setIsAlertOpen] = React.useState<boolean>(false);
   const postForm = () => {
-    return axios.post("http://localhost:5000/telegramMsg", {
+    const url = `${MY_BACKEND_URL}/telegramMsg`;
+    return axios.post(url, {
       alertDate: dayjs(date).format("YYYY-MM-DDTHH:mm"),
       alertText: event,
     });
