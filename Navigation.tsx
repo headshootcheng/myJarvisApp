@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Notification from "./pages/Notification";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { HamburgerIcon, Button } from "native-base";
-import Test from "./pages/Test";
 
 const Navigation = () => {
   const Drawer = createDrawerNavigator();
@@ -45,14 +44,6 @@ const Navigation = () => {
           component={Notification}
           options={(props) => ({
             title: "Notification",
-            ...headerSetting(props),
-          })}
-        />
-        <Drawer.Screen
-          name="Test"
-          component={Test}
-          options={(props) => ({
-            title: "Test",
             ...headerSetting(props),
           })}
         />

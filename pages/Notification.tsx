@@ -1,10 +1,9 @@
 import React from "react";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
-import { Text, View, Button, Platform } from "react-native";
-import * as BackgroundFetch from "expo-background-fetch";
-import * as TaskManager from "expo-task-manager";
-import useWellSayingMutation from "../hooks/useWellSayingMutation";
+import { Text, View, Platform } from "react-native";
+import { Subscription } from "expo-modules-core";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -12,21 +11,18 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-async function schedulePushNotification(content: string, person: string) {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Well Saying",
-      body: `${content} --- ${person}`,
-      sound: "bellSound.wav",
-    },
-    // after 2 seconds and then trigger
-    trigger: { seconds: 2 },
-  });
-}
-
-const BACKGROUND_FETCH_TASK = "background-fetch";
-
+// locally
+// async function schedulePushNotification(content: string, person: string) {
+//   await Notifications.scheduleNotificationAsync({
+//     content: {
+//       title: "Well Saying",
+//       body: `${content} --- ${person}`,
+//       sound: "bellSound.wav",
+//     },
+//     // after 2 seconds and then trigger
+//     trigger: { seconds: 2 },
+//   });
+// }
 async function registerForPushNotificationsAsync() {
   let token;
   if (Constants.isDevice) {
@@ -41,7 +37,9 @@ async function registerForPushNotificationsAsync() {
       alert("Failed to get push token for push notification!");
       return;
     }
+    // generate the token which represent for your app and device
     token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -59,52 +57,34 @@ async function registerForPushNotificationsAsync() {
 }
 
 const Notification = () => {
-  const [expoPushToken, setExpoPushToken] = React.useState<any>("");
-  const [notification, setNotification] = React.useState<any>(false);
-  const notificationListener = React.useRef<any>();
-  const responseListener = React.useRef<any>();
+  const [expoPushToken, setExpoPushToken] = React.useState<string>("");
+  const notificationListener = React.useRef<Subscription>();
+  const responseListener = React.useRef<Subscription>();
 
-  TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-    const { data } = await wellSayingMutateAsync();
-    schedulePushNotification(data.newslist[0].content, data.newslist[0].mrname);
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-  });
-
-  async function registerBackgroundFetchAsync() {
-    return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-      minimumInterval: 1, // 15 minutes
-      stopOnTerminate: false, // android only,
-      startOnBoot: true, // android only
-    });
-  }
-  const { mutateAsync: wellSayingMutateAsync } = useWellSayingMutation();
-
-  // turn on notification and background task locally
+  // turn on notification
   React.useEffect(() => {
-    const startBackgroundTask = async () => {
-      await registerBackgroundFetchAsync();
-    };
-    startBackgroundTask();
-
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) setExpoPushToken(token);
+    });
+    // listen to the notification message
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
+        console.log(notification);
+        //setNotification(notification);
       });
-
+    // listen to the event that user tap the notification
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("response:::::", response);
       });
 
     return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
+      if (notificationListener?.current && responseListener?.current) {
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+        Notifications.removeNotificationSubscription(responseListener.current);
+      }
     };
   }, []);
 
@@ -117,22 +97,6 @@ const Notification = () => {
       }}
     >
       <Text>Your expo push token: {expoPushToken}</Text>
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Text>
-          Title: {notification && notification.request.content.title}{" "}
-        </Text>
-        <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>
-          Data:{" "}
-          {notification && JSON.stringify(notification.request.content.data)}
-        </Text>
-      </View>
-      <Button
-        title="Press to schedule a notification"
-        onPress={async () => {
-          await schedulePushNotification("test", "Peter");
-        }}
-      />
     </View>
   );
 };
