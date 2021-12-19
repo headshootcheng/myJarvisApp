@@ -2,7 +2,7 @@
   "expo": {
     "name": "my-jarvis",
     "slug": "my-jarvis",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "owner": "codingbadas",
