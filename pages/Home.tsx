@@ -3,12 +3,9 @@ import { StyleSheet, View, Text, TextInput, Platform } from "react-native";
 import { FormControl, Button } from "native-base";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import color from "../constants/color";
-import dayjs from "dayjs";
-import axios from "axios";
-import useDataMutation from "../hooks/useDataMutation";
 import LoadingModal from "../component/LoadingModal";
 import AlertModal from "../component/Alert";
-import { MY_BACKEND_URL } from "@env";
+import useTelegramMutation from "../hooks/useTelegramMutation";
 
 const styles = StyleSheet.create({
   title: {
@@ -45,20 +42,17 @@ const maxDate = () => {
 };
 const Home = () => {
   const [event, setEvent] = React.useState<string>("");
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date>(new Date());
   const [alert, setAlert] = React.useState<Alert | null>(null);
   const [isAlertOpen, setIsAlertOpen] = React.useState<boolean>(false);
-  const postForm = () => {
-    const url = `${MY_BACKEND_URL}/telegramMsg`;
-    return axios.post(url, {
-      alertDate: dayjs(date).format("YYYY-MM-DDTHH:mm"),
-      alertText: event,
-    });
-  };
-  const { dataMutation } = useDataMutation({ postMethod: postForm });
+
+  const { mutateAsync: telegramMutateAsync } = useTelegramMutation();
   const submitForm = async () => {
     try {
-      const { data: successMsg } = await dataMutation.mutateAsync();
+      const { data: successMsg } = await telegramMutateAsync({
+        date: date,
+        event: event,
+      });
       setIsAlertOpen(true);
       setAlert({
         message: successMsg as string,

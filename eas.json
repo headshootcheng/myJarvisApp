@@ -7,9 +7,19 @@
     "preview": {
       "distribution": "internal"
     },
+    "preview-enterprise" : {
+      "distribution": "internal",
+      "ios": {
+        "enterpriseProvisioning": "universal" 
+      }
+    },
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "codingbadas@gmail.com"
+      }
+    }
   }
 }

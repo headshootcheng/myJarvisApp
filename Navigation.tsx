@@ -1,12 +1,16 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import colors from "./constants/color";
 import Home from "./pages/Home";
-import Detail from "./pages/Detail";
+import Notification from "./pages/Notification";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { HamburgerIcon, Button } from "native-base";
+import Test from "./pages/Test";
+
 const Navigation = () => {
-  const Stack = createNativeStackNavigator();
-  const headerSetting = {
+  const Drawer = createDrawerNavigator();
+
+  const headerSetting = (props: any) => ({
     headerStyle: {
       backgroundColor: colors.green["500"],
     },
@@ -14,27 +18,45 @@ const Navigation = () => {
     headerTitleStyle: {
       fontWeight: "bold",
     },
-  };
+    headerLeft: () => (
+      <Button
+        style={{ backgroundColor: "transparent" }}
+        onPress={() => {
+          props.navigation.openDrawer();
+        }}
+      >
+        <HamburgerIcon style={{ color: "white", marginLeft: 10, height: 22 }} />
+      </Button>
+    ),
+  });
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Detail"
-          component={Detail}
-          options={{
-            title: "Detail",
-            ...headerSetting,
-          }}
-        />
-        <Stack.Screen
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen
           name="Home"
           component={Home}
-          options={{
+          options={(props) => ({
             title: "Home",
-            ...headerSetting,
-          }}
+            ...headerSetting(props),
+          })}
         />
-      </Stack.Navigator>
+        <Drawer.Screen
+          name="Notification"
+          component={Notification}
+          options={(props) => ({
+            title: "Notification",
+            ...headerSetting(props),
+          })}
+        />
+        <Drawer.Screen
+          name="Test"
+          component={Test}
+          options={(props) => ({
+            title: "Test",
+            ...headerSetting(props),
+          })}
+        />
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 };
