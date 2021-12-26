@@ -20,6 +20,7 @@ import {
 } from "@react-navigation/native-stack";
 import ScanQRCode from "./pages/ScanQRCode";
 import QRCode from "./pages/QRCode";
+import ScanResultPage from "./pages/ScanResultPage";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -111,14 +112,10 @@ const Navigation = () => {
               headerTitleStyle: {
                 fontWeight: "bold",
                 fontFamily: fontsLoaded ? "Rubik-Regular" : "",
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 4.84,
-                elevation: 16,
+                textShadowColor: "rgba(0, 0, 0, 0.5)",
+                color: "white",
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 4,
                 fontSize: 18,
               },
               headerLeft: () => (
@@ -142,6 +139,15 @@ const Navigation = () => {
                   />
                 </Button>
               ),
+            } as NativeStackNavigationOptions)
+          }
+        />
+        <HomeStack.Screen
+          name={"ScanQRCodeResult"}
+          component={ScanResultPage}
+          options={() =>
+            ({
+              headerShown: false,
             } as NativeStackNavigationOptions)
           }
         />

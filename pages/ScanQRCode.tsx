@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ScanQRCode() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [scanned, setScanned] = useState<boolean>(false);
-
+  const navigation = useNavigation();
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -16,6 +16,7 @@ export default function ScanQRCode() {
 
   const handleBarCodeScanned = ({ type, data }: any) => {
     console.log("scanned", data, type);
+    navigation.navigate("ScanQRCodeResult" as never);
   };
 
   if (hasPermission === null) {
@@ -28,7 +29,7 @@ export default function ScanQRCode() {
   return (
     <View style={styles.container}>
       <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarCodeScanned={handleBarCodeScanned}
         style={[StyleSheet.absoluteFillObject, styles.camera]}
       >
         <Image
