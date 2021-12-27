@@ -3,9 +3,13 @@ import { Text, View, StyleSheet, Image } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import BarcodeMask from "react-native-barcode-mask";
 import { useNavigation } from "@react-navigation/native";
+import { Base64 } from "js-base64";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import dayjs from "dayjs";
 
 export default function ScanQRCode() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
   const navigation = useNavigation();
   useEffect(() => {
     (async () => {
@@ -14,9 +18,36 @@ export default function ScanQRCode() {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }: any) => {
-    console.log("scanned", data, type);
-    navigation.navigate("ScanQRCodeResult" as never);
+  const handleBarCodeScanned = async ({
+    type,
+    data,
+  }: {
+    type: string;
+    data: string;
+  }) => {
+    const regex = "^.*(eyJt.*)$";
+    const decodedPlace = Base64.decode(data.match(regex)?.[1] ?? "").replace(
+      "eyJt",
+      ""
+    );
+    try {
+      await AsyncStorage.setItem(
+        "qrcodeData",
+        JSON.stringify({
+          place: JSON.parse(decodedPlace),
+          date: dayjs().format("YYYY-MM-DD hh:mm"),
+        } as never)
+      );
+      navigation.navigate(
+        "ScanQRCodeResult" as never
+        // {
+        //   place: JSON.parse(decodedPlace),
+        //   date: dayjs().format("YYYY-MM-DD hh:mm"),
+        // } as never
+      );
+    } catch (error) {
+      alert(`async Storage Failed: ${error}`);
+    }
   };
 
   if (hasPermission === null) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   NavigationContainer,
   ParamListBase,
@@ -13,11 +13,13 @@ import {
   createDrawerNavigator,
   DrawerNavigationOptions,
 } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import { HamburgerIcon, Button } from "native-base";
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ScanQRCode from "./pages/ScanQRCode";
 import QRCode from "./pages/QRCode";
 import ScanResultPage from "./pages/ScanResultPage";
@@ -48,45 +50,58 @@ const drawerHeaderSetting = (props: {
   ),
 });
 
-const DrawScreens = () => (
-  <Drawer.Navigator initialRouteName="Home">
-    <Drawer.Screen
-      name="Home"
-      component={Home}
-      options={(props) =>
-        ({
-          title: "Home",
-          ...drawerHeaderSetting(props),
-        } as DrawerNavigationOptions)
-      }
-    />
-    <Drawer.Screen
-      name="Notification"
-      component={Notification}
-      options={(props) =>
-        ({
-          title: "Notification",
-          ...drawerHeaderSetting(props),
-        } as DrawerNavigationOptions)
-      }
-    />
-    <Drawer.Screen
-      name="QRCode"
-      component={QRCode}
-      options={(props) =>
-        ({
-          title: "QRCode",
-          ...drawerHeaderSetting(props),
-        } as DrawerNavigationOptions)
-      }
-    />
-  </Drawer.Navigator>
-);
+const DrawScreens = () => {
+  const navigation = useNavigation();
+  useEffect(() => {
+    const fetchDataFromAsyncStorage = async () => {
+      try {
+        const value = await AsyncStorage.getItem("qrcodeData");
+        if (value) navigation.navigate("ScanQRCodeResult" as never);
+      } catch (err) {}
+    };
+    fetchDataFromAsyncStorage();
+  }, []);
+  return (
+    <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Screen
+        name="Home"
+        component={Home}
+        options={(props) =>
+          ({
+            title: "Home",
+            ...drawerHeaderSetting(props),
+          } as DrawerNavigationOptions)
+        }
+      />
+      <Drawer.Screen
+        name="Notification"
+        component={Notification}
+        options={(props) =>
+          ({
+            title: "Notification",
+            ...drawerHeaderSetting(props),
+          } as DrawerNavigationOptions)
+        }
+      />
+      <Drawer.Screen
+        name="QRCode"
+        component={QRCode}
+        options={(props) =>
+          ({
+            title: "QRCode",
+            ...drawerHeaderSetting(props),
+          } as DrawerNavigationOptions)
+        }
+      />
+    </Drawer.Navigator>
+  );
+};
 
 const Navigation = () => {
   const [fontsLoaded] = useFonts({
     "Rubik-Regular": require("./assets/fonts/Rubik-Regular.ttf"),
   });
+
   return (
     <NavigationContainer>
       <HomeStack.Navigator initialRouteName="Drawer">

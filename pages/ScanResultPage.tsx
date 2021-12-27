@@ -1,24 +1,51 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Button, Center, HStack, Stack, VStack } from "native-base";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 import { useFonts } from "@expo-google-fonts/inter";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import dayjs from "dayjs";
 
+interface Result {
+  place: any;
+  date: string;
+}
 const ScanResultPage = () => {
   const [fontsLoaded] = useFonts({
     "Rubik-Regular": require("../assets/fonts/Rubik-Regular.ttf"),
     "Rubik-Bold": require("../assets/fonts/Rubik-Bold.ttf"),
   });
   const navigation = useNavigation();
+  const [result, setResult] = useState<Result>({
+    place: { nameZh: "將軍澳體育館" },
+    date: dayjs().format("YYYY-MM-DD hh:mm"),
+  });
+
+  useEffect(() => {
+    const fetchDataFromAsyncStorage = async () => {
+      try {
+        const value = await AsyncStorage.getItem("qrcodeData");
+        if (value) setResult(JSON.parse(value));
+        else navigation.navigate("QRCode" as never);
+      } catch (err) {
+        navigation.navigate("QRCode" as never);
+      }
+    };
+    fetchDataFromAsyncStorage();
+  }, []);
+
+  const goBackMenu = async () => {
+    try {
+      await AsyncStorage.removeItem("qrcodeData");
+      navigation.navigate("QRCode" as never);
+    } catch (err) {
+      console.log("clearing async storage error:", err);
+    }
+  };
   return (
     <View style={styles.container}>
-      <Button
-        style={styles.closeBtn}
-        onPress={() => {
-          navigation.navigate("QRCode" as never);
-        }}
-      >
+      <Button style={styles.closeBtn} onPress={goBackMenu}>
         <Image
           source={require("../assets/images/qrcode/headerClose.png")}
           style={styles.closeIcon}
@@ -48,7 +75,7 @@ const ScanResultPage = () => {
               },
             ]}
           >
-            Test
+            {result.place?.nameZh ?? "將軍澳體育館"}
           </Text>
           <Text
             style={[
@@ -56,7 +83,7 @@ const ScanResultPage = () => {
               fontsLoaded && { fontFamily: "Rubik-Regular" },
             ]}
           >
-            2021-12-25 01:14
+            {result.date}
           </Text>
         </VStack>
         <Center>
@@ -68,12 +95,7 @@ const ScanResultPage = () => {
       </View>
       <View>
         <VStack alignItems={"center"} space={5} mb={5}>
-          <Button
-            style={styles.leaveBtn}
-            onPress={() => {
-              navigation.navigate("QRCode" as never);
-            }}
-          >
+          <Button style={styles.leaveBtn} onPress={goBackMenu}>
             <Text
               style={[
                 styles.leaveBtnText,
