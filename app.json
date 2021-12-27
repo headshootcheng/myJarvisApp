@@ -2,25 +2,25 @@
   "expo": {
     "name": "my-jarvis",
     "slug": "my-jarvis",
-    "version": "1.1.2",
+    "version": "1.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/config/icon.png",
     "owner": "codingbadas",
     "plugins": [
       [
         "expo-notifications",
         {
-          "icon": "assets/icon.png",
+          "icon": "assets/images/config/icon.png",
           "color": "#ffffff",
           "sounds": [
-            "assets/bellSound.wav"
+            "assets/sounds/bellSound.wav"
           ],
           "mode": "production"
         }
       ]
     ],
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/images/config/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -42,12 +42,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/config/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/images/config/favicon.png"
     }
   }
 }
