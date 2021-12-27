@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "my-jarvis",
+    "name": "My Jarvis",
     "slug": "my-jarvis",
     "version": "1.2",
     "orientation": "portrait",
@@ -22,7 +22,7 @@
     "splash": {
       "image": "./assets/images/config/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
